@@ -1,0 +1,23 @@
+{
+    "name": "wam/imagebundle",
+    "description": "Image management for Symfony 2",
+    "keywords": ["asset"],
+    "homepage": "https://github.com/pete-robinson/wam",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Pete Robinson",
+            "email": "work@pete-robinson.co.uk",
+            "homepage": "http://pete-robinson.co.uk"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.1",
+        "symfony/symfony": ">=2.1.0,<2.3-dev",
+        "wam/assetbundle": "dev-master"
+    },
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-0": {"Wam\\ImageBundle": "src/"}
+    }
+}

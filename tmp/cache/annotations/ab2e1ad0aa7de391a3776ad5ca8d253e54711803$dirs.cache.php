@@ -1,0 +1,1 @@
+<?php return unserialize('a:1:{i:0;O:32:"Wam\\AssetBundle\\Annotations\\Dirs":0:{}}');

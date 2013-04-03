@@ -1,0 +1,10 @@
+parameters:
+  database_driver: pdo_mysql
+  database_host: localhost
+  database_port: ~
+  database_name: wam
+  database_user: root
+  database_password: ~
+  locale: en
+  secret: 41a217f064a7c679528a644e4b61ab7cd290d9dd
+  database_path: ~
