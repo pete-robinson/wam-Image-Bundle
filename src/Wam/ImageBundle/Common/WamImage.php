@@ -38,12 +38,24 @@ class WamImage extends AbstractContainerAware
 	 **/
 	private $tmpDir;
 	
-
 	/**
 	 * source image
 	 * @var Wam\ImageBundle\Image\SourceImage
 	 **/
 	private $source;
+
+	/**
+	 * resizer object
+	 * @var Wam\ImageBundle\Action\Resize
+	 **/
+	private $resize;
+
+	/**
+	 * entity to resize
+	 * @var Wam\AssetBundle\Entity\Base\AbstractEntity
+	 **/
+	private $entity;
+	
 	
 
 	/**
@@ -132,20 +144,39 @@ class WamImage extends AbstractContainerAware
 	 **/
 	public function resize(AbstractEntity $entity)
 	{
-		$resize = new Resize($this->getSourceImage());
-		$resize->setEntity($entity);
+		$this->entity = $entity;
+
+		$this->resize = new Resize($this->getSourceImage());
+		$this->resize->setEntity($entity);
 		
-		foreach($entity->getSizeDirs() as $size => $values) {
-			$resize->setMethod($values['method']);
-			$resize->setOutputWidth($values['width']);
-			$resize->setOutputHeight($values['height']);
-			$resize->setDestinationDirectory($values['directory']);
-			$resize->execute();
-		}
-		// $resize->load();
-		
-		return $resize;
+		return $this;
 	}
+
+	/**
+	 * do resize
+	 * @return void
+	 **/
+	public function execute()
+	{
+		foreach($this->entity->getSizeDirs() as $size => $values) {
+			$this->resize->setMethod($values['method']);
+			$this->resize->setOutputWidth($values['width']);
+			$this->resize->setOutputHeight($values['height']);
+			$this->resize->setDestinationDirectory($values['directory']);
+			$this->resize->execute();
+		}
+	}
+
+	/**
+	 * get resizer
+	 * @return Wam\ImageBundle\Action\Resize
+	 **/
+	public function getResizer()
+	{
+		return $this->resize;
+	}
+	
+	
 	
 
 

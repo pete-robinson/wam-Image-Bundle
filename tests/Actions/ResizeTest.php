@@ -60,6 +60,20 @@ class ResizeTest extends WamImageTestCase
 		chmod(__DIR__ . '/../../tmp/files/logo.jpg', 0777);
 
 	}
+
+	/**
+	 * test output images exist
+	 * @return void
+	 **/
+	public function testResizedImagesExist()
+	{
+		$resize = $this->getResizer();
+
+		$resizer->execute();
+
+		// test that all resized images are present and correct...
+	}
+	
 	
 	
 

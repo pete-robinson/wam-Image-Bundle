@@ -208,7 +208,7 @@ class AbstractActionsTest extends WamImageTestCase
 			$this->resizer = $this->container->get('wamimage')->resize($wamEntity);
 		}
 
-		return $this->resizer;
+		return $this->resizer->getResizer();
 	}
 	
 	
