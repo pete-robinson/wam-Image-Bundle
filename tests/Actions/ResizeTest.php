@@ -69,25 +69,153 @@ class ResizeTest extends WamImageTestCase
 	{
 		$resize = $this->getResizer();
 
-		$resizer->execute();
+		$name = $resize->execute();
 
-		// test that all resized images are present and correct...
+		$entity = $this->container->get('wam')->load($this->getProduct(1));
+
+		foreach($entity->getSizeDirs() as $size) {
+			$file = $size['directory']->getRootPath() . '/' . $name;
+			$image_size = getimagesize($file);
+
+			$this->assertFileExists($file);
+			
+			if($size['method'] == 'height') {
+				$this->assertEquals($image_size[1], $size['height']);
+			} else {
+				$this->assertEquals($image_size[0], $size['width']);
+			}
+		}
 	}
-	
-	
+
+	/**
+	 * test resizer, resizing down to GIFs
+	 * @return void
+	 **/
+	public function testResizeToGIF()
+	{
+		$resize = $this->getResizer();
+
+		$name = $resize->execute(false, \Wam\ImageBundle\Actions\Resize::FORMAT_GIF);
+
+		$entity = $this->container->get('wam')->load($this->getProduct(1));
+
+		foreach($entity->getSizeDirs() as $size) {
+			$file = $size['directory']->getRootPath() . '/' . $name;
+			$image_size = getimagesize($file);
+
+			$this->assertFileExists($file);
+			
+			if($size['method'] == 'height') {
+				$this->assertEquals($image_size[1], $size['height']);
+			} else {
+				$this->assertEquals($image_size[0], $size['width']);
+			}
+		}
+	}
+
+	/**
+	 * test resizer, resizing down to PNGs
+	 * @return void
+	 **/
+	public function testResizeToPNG()
+	{
+		$resize = $this->getResizer();
+
+		$name = $resize->execute(false, \Wam\ImageBundle\Actions\Resize::FORMAT_PNG);
+
+		$entity = $this->container->get('wam')->load($this->getProduct(1));
+
+		foreach($entity->getSizeDirs() as $size) {
+			$file = $size['directory']->getRootPath() . '/' . $name;
+			$image_size = getimagesize($file);
+
+			$this->assertFileExists($file);
+			
+			if($size['method'] == 'height') {
+				$this->assertEquals($image_size[1], $size['height']);
+			} else {
+				$this->assertEquals($image_size[0], $size['width']);
+			}
+		}
+	}
+
+	/**
+	 * test resizer, resizing from GIFs
+	 * @return void
+	 **/
+	public function testResizeFromGIF()
+	{
+		$resize = $this->getResizer('gif');
+
+		$name = $resize->execute();
+
+		$entity = $this->container->get('wam')->load($this->getProduct(1));
+
+		foreach($entity->getSizeDirs() as $size) {
+			$file = $size['directory']->getRootPath() . '/' . $name;
+			$image_size = getimagesize($file);
+
+			$this->assertFileExists($file);
+			
+			if($size['method'] == 'height') {
+				$this->assertEquals($image_size[1], $size['height']);
+			} else {
+				$this->assertEquals($image_size[0], $size['width']);
+			}
+		}
+	}
+
+	/**
+	 * test resizer, resizing from PNGs
+	 * @return void
+	 **/
+	public function testResizeFromPNG()
+	{
+		$resize = $this->getResizer('png');
+
+		$name = $resize->execute();
+
+		$entity = $this->container->get('wam')->load($this->getProduct(1));
+
+		foreach($entity->getSizeDirs() as $size) {
+			$file = $size['directory']->getRootPath() . '/' . $name;
+			$image_size = getimagesize($file);
+
+			$this->assertFileExists($file);
+			
+			if($size['method'] == 'height') {
+				$this->assertEquals($image_size[1], $size['height']);
+			} else {
+				$this->assertEquals($image_size[0], $size['width']);
+			}
+		}
+	}
 	
 
 	/**
 	 * return standard uploaded file
+	 * @param string $format
 	 * @return Symfony\Component\HttpFoundation\File\UploadedFile
 	 **/
-	private function getFile()
+	private function getFile($format='jpg')
 	{
+		switch($format) {
+			case 'gif':
+				$mime = 'image/gif';
+				break;
+			case 'png':
+				$mime = 'image/png';
+				break;
+			default:
+				$mime = 'image/jpeg';
+				break;
+		}
+
 		$file = new UploadedFile(
-			__DIR__ . '/../../tmp/files/logo.jpg',
-			'logo.jpg',
-			'image/jpeg',
-			filesize(realpath(__DIR__ . '/../../tmp/files/logo.jpg'))
+			__DIR__ . '/../../tmp/files/logo.' . $format,
+			'logo.' . $format,
+			$mime,
+			filesize(realpath(__DIR__ . '/../../tmp/files/logo.' . $format))
 		);
 
 		$response = $this->client->request(
@@ -109,6 +237,16 @@ class ResizeTest extends WamImageTestCase
 		if(!file_exists(__DIR__ . '/../../tmp/files/logo.jpg')) {
 			$dir = $this->getDirectory();
 			copy($dir->getRootPath() . '/logo.jpg', __DIR__ . '/../../tmp/files/logo.jpg');
+		}
+
+		if(!file_exists(__DIR__ . '/../../tmp/files/logo.gif')) {
+			$dir = $this->getDirectory();
+			copy($dir->getRootPath() . '/logo.gif', __DIR__ . '/../../tmp/files/logo.gif');
+		}
+
+		if(!file_exists(__DIR__ . '/../../tmp/files/logo.png')) {
+			$dir = $this->getDirectory();
+			copy($dir->getRootPath() . '/logo.png', __DIR__ . '/../../tmp/files/logo.png');
 		}
 	}
 
@@ -134,13 +272,14 @@ class ResizeTest extends WamImageTestCase
 
 	/**
 	 * get Resizer
+	 * @param string $format - set to GIF or PNG to load file format other than JPEG
 	 * @return Wam\ImageBundle\Actions\Resize
 	 **/
-	private function getResizer()
+	private function getResizer($format='jpg')
 	{
 		if(!$this->resizer) {
 			$wamEntity = $this->container->get('wam')->load($this->getProduct(1));
-			$this->container->get('wamimage')->load($this->getFile());
+			$this->container->get('wamimage')->load($this->getFile($format));
 			$this->resizer = $this->container->get('wamimage')->resize($wamEntity);
 		}
 

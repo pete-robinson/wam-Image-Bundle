@@ -154,17 +154,28 @@ class WamImage extends AbstractContainerAware
 
 	/**
 	 * do resize
+	 * @param string $name
 	 * @return void
 	 **/
-	public function execute()
+	public function execute($name='', $format=null)
 	{
-		foreach($this->entity->getSizeDirs() as $size => $values) {
+		$sizes = $this->entity->getSizeDirs();
+		$name = ($name) ? $name : uniqid();
+
+		if($format) {
+			$this->resize->setOutputFormat($format);
+		}
+
+		foreach($sizes as $size => $values) {
 			$this->resize->setMethod($values['method']);
 			$this->resize->setOutputWidth($values['width']);
 			$this->resize->setOutputHeight($values['height']);
 			$this->resize->setDestinationDirectory($values['directory']);
+			// $this->resize->setOutputName($name);
 			$this->resize->execute();
 		}
+
+		return $this->resize->getOutputName() . '.' . $this->resize->getOutputFormat();
 	}
 
 	/**

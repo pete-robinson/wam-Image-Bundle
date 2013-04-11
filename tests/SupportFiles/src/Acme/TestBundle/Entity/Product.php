@@ -56,6 +56,15 @@ class Product
 		),
 		'products/{id}/images/200',
 		'products/{id}/images/800',
+		array(
+			'path' => 'products/{id}/images/1000',
+			'method' => Resize::SQUARE
+		),
+		array(
+			'path' => 'products/{id}/images/1200',
+			'method' => Resize::SQUARE,
+			'width' => 1200
+		),
 		'products/{id}/documents'
 	);
 

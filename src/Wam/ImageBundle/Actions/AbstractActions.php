@@ -233,7 +233,7 @@ abstract class AbstractActions
 	 * get output name
 	 * @return string
 	 **/
-	protected function getOutputName()
+	public function getOutputName()
 	{
 		return $this->outputName;
 	}
@@ -245,7 +245,7 @@ abstract class AbstractActions
 	protected function save()
 	{
 		if(!$this->getOutputName()) {
-			$this->setOutputName(uniqid() . '.' . $this->getOutputFormat());
+			$this->setOutputName(uniqid());
 		}
 
 		switch($this->getOutputFormat()) {
@@ -271,7 +271,7 @@ abstract class AbstractActions
 	 **/
 	protected function getOutputDestination()
 	{
-		return $this->getDestinationDirectory()->getRootPath() . '/' . $this->getOutputName();
+		return $this->getDestinationDirectory()->getRootPath() . '/' . $this->getOutputName() . '.' . $this->getOutputFormat();
 	}
 	
 	

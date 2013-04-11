@@ -70,7 +70,8 @@ class Resize extends AbstractActions implements ActionsInterface
 					$this->outputWidth = $this->scaleToHeight();
 				}
 				break;
-			default:
+			case 'square':
+				$this->outputHeight = $this->outputWidth;
 				break;
 		}
 
